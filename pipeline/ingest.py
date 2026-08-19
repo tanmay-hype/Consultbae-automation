@@ -26,15 +26,15 @@ def run_ingestion_pipeline():
         for _, row in df.iterrows():
             row_dict = row.to_dict()
             
-            # Field extraction across schemas
-            raw_name = row_dict.get("name") or row_dict.get("full_name") or row_dict.get("candidate_name")
-            raw_phone = row_dict.get("phone") or row_dict.get("contact") or row_dict.get("mobile")
-            raw_email = row_dict.get("email") or row_dict.get("mail_id")
-            raw_exp = row_dict.get("experience") or row_dict.get("exp") or row_dict.get("work_experience")
-            raw_skills = row_dict.get("skills") or row_dict.get("skillset") or row_dict.get("primary_skills")
-            raw_loc = row_dict.get("location") or row_dict.get("city")
-
+            # Field extraction mapped explicitly to the 3 CSVs
+            raw_name = row_dict.get("Full Name") or row_dict.get("worker_name") or row_dict.get("Name")
+            raw_phone = row_dict.get("Phone") or row_dict.get("Phone Number")
+            raw_email = row_dict.get("Email") or row_dict.get("email_id")
+            raw_exp = row_dict.get("Experience (Years)") 
+            raw_skills = row_dict.get("Skills") or row_dict.get("skill_tags")
+            raw_loc = row_dict.get("City") or row_dict.get("location")
             phone_norm = normalize_phone(raw_phone)
+            
             if not phone_norm:
                 continue  # Skip unidentifiable records without valid contact numbers
 

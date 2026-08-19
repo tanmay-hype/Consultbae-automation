@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: consultbae_db
+    environment:
+      POSTGRES_USER: consultbae_user
+      POSTGRES_PASSWORD: consultbae_password
+      POSTGRES_DB: consultbae_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: consultbae_api
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      # Connects to the Postgres container automatically
+      - DATABASE_URL=postgresql://consultbae_user:consultbae_password@db:5432/consultbae_db
+
+  n8n:
+    image: n8nio/n8n
+    container_name: consultbae_n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=Asia/Kolkata
+    depends_on:
+      - db
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  postgres_data:
+  n8n_data:

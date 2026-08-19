@@ -1,0 +1,18 @@
+body { font-family: system-ui, -apple-system, sans-serif; background-color: #f4f7fb; padding: 20px; }
+.container { max-width: 1000px; margin: 0 auto; }
+.card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+label { display: block; margin: 10px 0 5px; font-weight: bold; }
+input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+.btn { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn.primary { background: #007bff; color: white; width: 100%; margin-top: 10px; }
+.btn.danger { background: #dc3545; color: white; }
+.recording-controls { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; }
+.divider { text-align: center; margin: 20px 0; color: #777; font-weight: bold; }
+table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
+th { background-color: #fafafa; }
+.badge { padding: 4px 8px; border-radius: 12px; font-size: 0.8em; color: white; }
+.badge.excellent { background: #28a745; }
+.badge.acceptable { background: #ffc107; color: #333; }
+.badge.high { background: #dc3545; }
