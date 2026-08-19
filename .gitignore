@@ -1,0 +1,61 @@
+# =========================
+# Environment Variables
+# =========================
+.env
+.env.*
+*.local
+
+# =========================
+# Python / FastAPI
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+venv/
+.venv/
+env/
+.env/
+
+# =========================
+# Databases & Volumes
+# =========================
+# Ignore local SQLite files
+*.db
+*.sqlite
+*.sqlite3
+
+# Ignore Docker volume bind mounts (if you ever map them locally)
+postgres_data/
+n8n_data/
+
+# =========================
+# Media & Uploads
+# =========================
+# Ignore user-submitted audio files to prevent repo bloat
+data/uploads/*
+!data/uploads/.gitkeep
+
+# Ignore loose audio files anywhere
+*.wav
+*.mp3
+*.m4a
+*.webm
+*.ogg
+
+# =========================
+# OS & Editor Files
+# =========================
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
