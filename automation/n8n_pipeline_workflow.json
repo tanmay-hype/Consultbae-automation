@@ -1,0 +1,100 @@
+{
+  "name": "ConsultBae Duplicate Checker & LLM Skill Tagger",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "new-applicant",
+        "options": {}
+      },
+      "name": "Applicant Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, full_name, email FROM candidates WHERE phone_normalized = '={{ $json.body.phone }}' OR email = '={{ $json.body.email }}' LIMIT 1;"
+      },
+      "name": "Check DB Duplicate",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.1,
+      "position": [420, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.id ? true : false }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "If Duplicate",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [640, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "recruitment-alerts",
+        "text": "⚠️ Duplicate Candidate Detected: {{ $node['Applicant Webhook'].json.body.name }} (Matched DB ID: {{ $json.id }})"
+      },
+      "name": "Slack Alert",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [880, 200]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "Categorize the candidate into exactly ONE domain: 'automation-heavy', 'web dev', 'data', or 'operations'. Return only the category string."
+            },
+            {
+              "role": "user",
+              "content": "Skills: {{ $node['Applicant Webhook'].json.body.skills }}, Experience: {{ $node['Applicant Webhook'].json.body.experience }}"
+            }
+          ]
+        }
+      },
+      "name": "LLM Skill Classifier",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [880, 420]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO candidates (full_name, phone_normalized, email, skills, primary_source) VALUES ('={{ $node['Applicant Webhook'].json.body.name }}', '={{ $node['Applicant Webhook'].json.body.phone }}', '={{ $node['Applicant Webhook'].json.body.email }}', '[\"{{ $json.message.content }}\"]', 'webhook_n8n');"
+      },
+      "name": "Write to DB",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.1,
+      "position": [1100, 420]
+    }
+  ],
+  "connections": {
+    "Applicant Webhook": {
+      "main": [[{ "node": "Check DB Duplicate", "type": "main", "index": 0 }]]
+    },
+    "Check DB Duplicate": {
+      "main": [[{ "node": "If Duplicate", "type": "main", "index": 0 }]]
+    },
+    "If Duplicate": {
+      "main": [
+        [{ "node": "Slack Alert", "type": "main", "index": 0 }],
+        [{ "node": "LLM Skill Classifier", "type": "main", "index": 0 }]
+      ]
+    },
+    "LLM Skill Classifier": {
+      "main": [[{ "node": "Write to DB", "type": "main", "index": 0 }]]
+    }
+  }
+}

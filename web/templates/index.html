@@ -1,0 +1,79 @@
+<!-- web/templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ConsultBae Gig Audio Submission Engine</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Gig Worker Audio Verification</h2>
+    
+    <!-- Submission View -->
+    <div class="card">
+      <h3>Submit Recording</h3>
+      <form id="audioForm">
+        <label>Full Name:</label>
+        <input type="text" id="applicant_name" required placeholder="e.g. Rahul Sharma">
+        
+        <label>Phone Number (10-Digit):</label>
+        <input type="text" id="applicant_phone" required placeholder="9876543210">
+        
+        <div class="recording-controls">
+          <button type="button" id="recordBtn" class="btn">🎙️ Start Recording</button>
+          <button type="button" id="stopBtn" class="btn danger" disabled>⏹️ Stop</button>
+          <span id="recordingTimer">00:00</span>
+        </div>
+        
+        <div class="divider">OR</div>
+        
+        <label>Upload Audio File (.wav, .mp3, .m4a):</label>
+        <input type="file" id="audioUpload" accept="audio/*">
+        
+        <button type="submit" class="btn primary">Upload & Run DSP Extraction</button>
+      </form>
+    </div>
+
+    <!-- Submissions & Metrics Table -->
+    <div class="card">
+      <h3>Live Audio Submissions & Extraction Logs</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Applicant</th>
+            <th>Phone</th>
+            <th>Player</th>
+            <th>Duration</th>
+            <th>Sample Rate</th>
+            <th>Bitrate</th>
+            <th>Loudness</th>
+            <th>SNR / Quality</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sub in submissions %}
+          <tr>
+            <td><strong>{{ sub.applicant_name }}</strong></td>
+            <td>{{ sub.applicant_phone }}</td>
+            <td>
+              <audio controls src="{{ sub.file_name }}" preload="none"></audio>
+            </td>
+            <td>{{ sub.duration_seconds }}s</td>
+            <td>{{ sub.sample_rate_khz }} kHz</td>
+            <td>{{ sub.bitrate_kbps }} kbps</td>
+            <td>{{ sub.loudness_db }} dBFS</td>
+            <td>
+              <span class="badge {{ sub.quality_flag | lower }}">
+                {{ sub.snr_db }} dB ({{ sub.quality_flag }})
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script src="/static/js/recorder.js"></script>
+</body>
+</html>
