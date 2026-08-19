@@ -4,10 +4,7 @@ services:
   db:
     image: postgres:15-alpine
     container_name: consultbae_db
-    environment:
-      POSTGRES_USER: consultbae_user
-      POSTGRES_PASSWORD: consultbae_password
-      POSTGRES_DB: consultbae_db
+    env_file: .env
     ports:
       - "5433:5432"
     volumes:
@@ -22,10 +19,7 @@ services:
       - "8000:8000"
     volumes:
       - ./data:/app/data
-    environment:
-      # Connects to the Postgres container automatically
-      - DATABASE_URL=postgresql://consultbae_user:consultbae_password@db:5432/consultbae_db
-
+    env_file: .env
   n8n:
     image: n8nio/n8n
     container_name: consultbae_n8n
